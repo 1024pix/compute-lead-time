@@ -1,7 +1,7 @@
-import {describe, it, vi, expect} from "vitest";
-import {extractData} from "../extract-data";
+import { describe, expect, it, vi } from 'vitest';
+import { extractData } from '../extract-data';
 
-describe('Extract data', () => {
+describe('extract data', () => {
   it('returns issue transitions with timestamp, source and destination', async () => {
     const items = [
       {
@@ -12,19 +12,19 @@ describe('Extract data', () => {
       {
         field: 'assignee',
       },
-    ]
+    ];
     const jira = {
       searchJira: vi.fn()
-        .mockResolvedValueOnce({total: 2})
-        .mockResolvedValueOnce({issues: [{key: 'issue #1'}]}),
+        .mockResolvedValueOnce({ total: 2 })
+        .mockResolvedValueOnce({ issues: [{ key: 'issue #1' }] }),
       getIssueChangelog: vi.fn().mockResolvedValueOnce({
         values: [
-          {id: 'transitionId', author: {}, created: '2024-03-12T12:00:00', items }
-        ]
+          { id: 'transitionId', author: {}, created: '2024-03-12T12:00:00', items },
+        ],
       }),
     };
 
-    const data = await extractData({jira});
+    const data = await extractData({ jira });
 
     expect(data).to.deep.equal([
       {
@@ -32,7 +32,7 @@ describe('Extract data', () => {
         timestamp: '2024-03-12T12:00:00',
         source: 'Backlog',
         destination: 'Ready for Dev',
-      }
-    ])
+      },
+    ]);
   });
 });
