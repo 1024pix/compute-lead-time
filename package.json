@@ -13,6 +13,7 @@
     "db:delete": "node scripts/database/drop-database",
     "db:empty": "node scripts/database/empty-database",
     "db:migrate": "knex --knexfile db/knexfile.js migrate:latest",
+    "db:rollback:latest": "knex --knexfile db/knexfile.js migrate:down",
     "lint": "eslint .",
     "postdeploy": "npm run db:migrate",
     "test": "vitest"
