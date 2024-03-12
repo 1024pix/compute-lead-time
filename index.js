@@ -1,6 +1,7 @@
 import { env } from 'node:process';
 import JiraClient from 'jira-client';
 import { extractData } from './extract-data.js';
+import { saveData } from './save-data.js';
 
 async function main() {
   const jira = new JiraClient({
@@ -12,8 +13,7 @@ async function main() {
     strictSSL: true,
   });
   const data = await extractData({ jira });
-  // eslint-disable-next-line no-console
-  console.log({ data });
+  await saveData({ data });
 }
 
 main();
