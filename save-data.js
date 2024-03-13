@@ -1,5 +1,5 @@
-import { knex } from 'db/knex-database-connection.js';
-import chunk from 'lodash/chunk';
+import chunk from 'lodash/chunk.js';
+import { knex } from './db/knex-database-connection.js';
 
 export async function saveData({ data }) {
   const chunks = chunk(data, 1000);
