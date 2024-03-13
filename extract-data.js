@@ -1,5 +1,5 @@
 export async function extractData({ jira }) {
-  const JQL = `project = PIX AND "Parent Link" IS NOT EMPTY AND status = 'Deployed In Prod' AND "Date of MEP[Date]" > startOfMonth()`;
+  const JQL = `project = PIX AND "Parent Link" IS NOT EMPTY AND status = 'Deployed In Prod'`;
   const { total } = await jira.searchJira(JQL);
   const pages = Math.ceil(total / 100);
 
