@@ -5,6 +5,8 @@ export async function extractData({ jira }) {
 
   const issues = [];
   for (let i = 0; i < pages; i++) {
+    // eslint-disable-next-line no-console
+    console.log('Extracting page', i + 1, 'of', pages);
     const pageIssues = await extractIssuesForGivenPage({ jira, jql: JQL, page: i });
     issues.push(...pageIssues);
   }
