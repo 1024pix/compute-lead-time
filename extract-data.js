@@ -1,5 +1,5 @@
 export async function extractData({ jira }) {
-  const JQL = `project = PIX AND "Parent Link" IS NOT EMPTY AND status = 'Deployed In Prod'`;
+  const JQL = `project = PIX AND "Parent Link" IS NOT EMPTY AND status = 'Deployed In Prod' AND "Appli Pix?[Dropdown]" IN (API, "Pix App", "Pix Admin", "Pix Orga", "Pix Certif", Pix1D)`;
   const { total } = await jira.searchJira(JQL);
   const pages = Math.ceil(total / 100);
 
