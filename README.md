@@ -17,6 +17,8 @@ npm ci
 cp sample.env .env
 ```
 
+For the password, you need to create an API Token at this url : https://id.atlassian.com/manage-profile/security/api-tokens
+
 3. Run the script:
 ```bash
 node --env-file=.env index.js
