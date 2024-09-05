@@ -9,9 +9,9 @@
   "main": "index.js",
   "scripts": {
     "db:new-migration": "npx knex --knexfile db/knexfile.js migrate:make $migrationname",
-    "db:create": "node scripts/database/create-database",
-    "db:delete": "node scripts/database/drop-database",
-    "db:empty": "node scripts/database/empty-database",
+    "db:create": "node --env-file=.env scripts/database/create-database",
+    "db:delete": "node --env-file=.env scripts/database/drop-database",
+    "db:empty": "node --env-file=.env scripts/database/empty-database",
     "db:migrate": "knex --knexfile db/knexfile.js migrate:latest",
     "db:rollback:latest": "knex --knexfile db/knexfile.js migrate:down",
     "lint": "eslint .",
