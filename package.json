@@ -19,7 +19,7 @@
     "test": "vitest"
   },
   "dependencies": {
-    "jira-client": "8.2.2",
+    "jira-client": "file:../node-jira-client/jira-client-8.2.2.tgz",
     "knex": "^3.1.0",
     "lodash": "^4.17.21",
     "pg": "^8.11.3"
