@@ -1,42 +1,58 @@
 export async function extractData({ jira }) {
-  const JQL = `project = PIX AND "Parent Link" IS NOT EMPTY AND status = 'Deployed In Prod' AND "Appli Pix?[Dropdown]" IN (API, "Pix App", "Pix Admin", "Pix Orga", "Pix Certif", Pix1D)`;
-  const { total } = await jira.searchJira(JQL);
-  const pages = Math.ceil(total / 100);
+  const JQL = `project = PIX
+AND "project = PIX 
+AND "Parent Link" IS NOT EMPTY 
+AND status = 'Deployed In Prod' 
+AND "Appli Pix?[Dropdown]" 
+  IN (API, "Pix App", "Pix Admin", "Pix Orga", "Pix Certif", Pix1D)`;
 
-  const issues = [];
-  for (let i = 0; i < pages; i++) {
-    // eslint-disable-next-line no-console
-    console.log('Extracting page', i + 1, 'of', pages);
-    const pageIssues = await extractIssuesForGivenPage({ jira, jql: JQL, page: i });
-    issues.push(...pageIssues);
+  let result = await jira.searchJira(JQL, { fields: ['*all'], expand: 'transitions, operations, changelog' });
+
+  const allIssues = [];
+
+  while (result.isLast === false) {
+    console.log('Extracting pages...');
+    allIssues.push(...result.issues);
+    result = await jira.searchJira(JQL, { nextPageToken: result.nextPageToken, fields: ['*all'], expand: 'transitions, operations, changelog' });
   }
-  return issues;
+
+  // for the last batch when is last is true
+  allIssues.push(...result.issues);
+
+  return await extractIssuesForGivenPage({
+    jira,
+    allIssues,
+  });
 }
 
-async function extractIssuesForGivenPage({ jira, jql, page }) {
-  const search = await jira.searchJira(jql, { maxResults: 100, startAt: page * 100 });
-
+async function extractIssuesForGivenPage({ jira, allIssues }) {
   const issues = [];
-  for (const issue of search.issues) {
-    const issueStatusChangelog = await getStatusChangelog({ issueKey: issue.key, jira });
-    issues.push(...issueStatusChangelog);
-  }
-  return issues;
-}
-
-async function getStatusChangelog({ issueKey, jira }) {
-  const issueChangelog = await jira.getIssueChangelog(issueKey);
-  return issueChangelog.values
-    .flatMap(({ created, items }) => {
-      return items
-        .filter(({ field }) => field === 'status')
-        .map(({ fromString, toString }) => {
-          return {
-            issueId: issueKey,
-            timestamp: created,
-            source: fromString,
-            destination: toString,
-          };
-        });
+  for (const issue of allIssues) {
+    const issueStatusChangelog = await getStatusChangelog({
+      issueId: issue.key,
+      jira,
     });
+    issues.push({
+      issueId: issue.key,
+      labels: issue.fields.labels,
+      changelog: issueStatusChangelog,
+    });
+  }
+  return issues;
+}
+
+async function getStatusChangelog({ issueId, jira }) {
+  const issueChangelog = await jira.getIssueChangelog(issueId);
+  return issueChangelog.values.flatMap(({ created, items }) => {
+    return items
+      .filter(({ field }) => field === 'status')
+      .map(({ fromString, toString }) => {
+        return {
+          issueId,
+          timestamp: created,
+          source: fromString,
+          destination: toString,
+        };
+      });
+  });
 }
