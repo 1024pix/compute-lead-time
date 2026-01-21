@@ -1,4 +1,4 @@
-import process from 'node:process';
+import { env } from 'node:process';
 
 function localPostgresEnv(databaseUrl, knexAsyncStacktraceEnabled) {
   return {
@@ -18,23 +18,23 @@ function localPostgresEnv(databaseUrl, knexAsyncStacktraceEnabled) {
   };
 }
 const environments = {
-  development: localPostgresEnv(process.env.DATABASE_URL, process.env.KNEX_ASYNC_STACKTRACE_ENABLED),
+  development: localPostgresEnv(env.DATABASE_URL, env.KNEX_ASYNC_STACKTRACE_ENABLED),
 
-  test: localPostgresEnv(process.env.TEST_DATABASE_URL, process.env.KNEX_ASYNC_STACKTRACE_ENABLED),
+  test: localPostgresEnv(env.TEST_DATABASE_URL, env.KNEX_ASYNC_STACKTRACE_ENABLED),
 
   production: {
     client: 'postgresql',
-    connection: process.env.DATABASE_URL,
+    connection: env.DATABASE_URL,
     pool: {
-      min: Number.parseInt(process.env.DATABASE_CONNECTION_POOL_MIN_SIZE, 10) || 1,
-      max: Number.parseInt(process.env.DATABASE_CONNECTION_POOL_MAX_SIZE, 10) || 4,
+      min: Number.parseInt(env.DATABASE_CONNECTION_POOL_MIN_SIZE, 10) || 1,
+      max: Number.parseInt(env.DATABASE_CONNECTION_POOL_MAX_SIZE, 10) || 4,
     },
     migrations: {
       tableName: 'knex_migrations',
       directory: './migrations',
       loadExtensions: ['.js'],
     },
-    asyncStackTraces: process.env.KNEX_ASYNC_STACKTRACE_ENABLED !== 'false',
+    asyncStackTraces: env.KNEX_ASYNC_STACKTRACE_ENABLED !== 'false',
   },
 };
 
